@@ -1,0 +1,24 @@
+{
+  "name": "discordbotv4",
+  "version": "1.0.0",
+  "description": "4th Rev. of my Discord bot",
+  "main": "bot.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabee12/DiscordBotV4.git"
+  },
+  "keywords": [
+    "Discord",
+    "Bot",
+    "VoIP"
+  ],
+  "author": "Gabriel Echeverria",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gabee12/DiscordBotV4/issues"
+  },
+  "homepage": "https://github.com/gabee12/DiscordBotV4#readme"
+}
