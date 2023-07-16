@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { getQueueInstance } = require('./queueManager');
-const { audioPlayer } = require('./play');
+const { audioPlayer, play } = require('./play');
 const queue = getQueueInstance();
 
 module.exports = {
@@ -16,6 +16,8 @@ module.exports = {
 
 		try {
 			audioPlayer.pause();
+			serverQueue.songs.shift();
+			play(interaction.guild, serverQueue.songs[0]);
 			return interaction.reply('Musica pulada ');
 		}
 		catch (error) {
