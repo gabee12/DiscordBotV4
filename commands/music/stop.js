@@ -21,7 +21,7 @@ module.exports = {
 			audioPlayer.stop();
 			connection.destroy();
 			queue.delete(interaction.guild.id);
-			await interaction.reply('Parado com sucesso!');
+			await interaction.reply('Obrigado, sua contribuição para a sociedade não será esquecida!');
 		}
 		catch (error) {
 			console.error('Erro: ', error);
