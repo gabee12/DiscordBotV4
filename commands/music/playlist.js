@@ -46,39 +46,49 @@ module.exports = {
 				textChannel: interaction.channel,
 				voiceChannel,
 				connection: null,
-				songs: [songArr[0]],
+				songs: [],
 				playing: false,
 			};
 
 			queue.set(interaction.guild.id, queueConstruct);
+			queueConstruct.songs.push(songArr[0]);
 
-			play(interaction.guild.id, queueConstruct[0]);
+			try {
+				const connection = joinVoiceChannel({
+					channelId: voiceChannel.id,
+					guildId: voiceChannel.guild.id,
+					adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+				});
+
+				queueConstruct.connection = connection;
+				queueConstruct.playing = true;
+				await play(interaction.guild, queueConstruct.songs[0]);
+				serverQueue = queue.get(interaction.guild.id);
+				songArr.splice(0, 1);
+				songArr.forEach(item => {
+					serverQueue.songs.push(item);
+				});
+				return interaction.reply('Playlist adicionada a fila!');
+			}
+			catch (error) {
+				console.error('Erro:', error);
+				queue.delete(interaction.guild.id);
+				return interaction.reply('Ocorreu um erro ao tentar se juntar ao canal de voz');
+			}
 		}
-
-		serverQueue = queue.get(interaction.guild.id);
-		songArr.splice(0, 1);
-
-		try {
-			const connection = joinVoiceChannel({
-				channelId: voiceChannel.id,
-				guildId: voiceChannel.guild.id,
-				adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-			});
-
-			songArr.forEach(item => {
-				serverQueue.songs.push(item);
-			});
-
-			serverQueue.connection = connection;
-			serverQueue.playing = true;
-			await play(interaction.guild, serverQueue.songs[0]);
-			await interaction.reply('Playlist adicionada com sucesso pt.1');
-			await interaction.followUp('Playlist adicionada com sucesso');
-		}
-		catch (error) {
-			console.error('Erro:', error);
-			queue.delete(interaction.guild.id);
-			await interaction.reply('Ocorreu um erro ao tentar adicionar a playlist');
+		else {
+			serverQueue = queue.get(interaction.guild.id);
+			try {
+				songArr.forEach(item => {
+					serverQueue.songs.push(item);
+				});
+				await interaction.followUp('Playlist adicionada a fila!');
+			}
+			catch (error) {
+				console.error('Erro:', error);
+				queue.delete(interaction.guild.id);
+				await interaction.reply('Ocorreu um erro ao tentar adicionar a playlist');
+			}
 		}
 	},
 };
