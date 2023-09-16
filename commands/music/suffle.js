@@ -1,0 +1,32 @@
+const { SlashCommandBuilder } = require('discord.js');
+const { getQueueInstance } = require('./queueManager');
+const queue = getQueueInstance();
+
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName('shuffle')
+		.setDescription('Randomiza a fila'),
+	async execute(interaction) {
+		const voiceChannel = interaction.member.voice.channel;
+		const serverQueue = queue.get(interaction.guild.id);
+
+		if (!voiceChannel) {
+			await interaction.reply('É preciso estar em um canal de voz');
+		}
+
+		if (!serverQueue || serverQueue.songs.length <= 1) {
+			await interaction.reply('Nao há nenhuma fila atualmente ou a fila tem apenas uma música');
+		}
+
+		const songsToShuffle = serverQueue.songs.splice(1);
+
+		for (let i = songsToShuffle.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[songsToShuffle[i], songsToShuffle[j]] = [songsToShuffle[j], songsToShuffle[i]];
+		}
+
+		serverQueue.songs = serverQueue.songs.concat(songsToShuffle);
+
+		interaction.reply('A fila foi randomizada');
+	},
+};

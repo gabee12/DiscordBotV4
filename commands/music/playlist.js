@@ -39,7 +39,6 @@ module.exports = {
 			};
 			songArr.push(song);
 		});
-		console.log(JSON.stringify(songArr));
 
 		if (!serverQueue) {
 			const queueConstruct = {
@@ -82,7 +81,7 @@ module.exports = {
 				songArr.forEach(item => {
 					serverQueue.songs.push(item);
 				});
-				await interaction.followUp('Playlist adicionada a fila!');
+				await interaction.reply('Playlist adicionada a fila!');
 			}
 			catch (error) {
 				console.error('Erro:', error);

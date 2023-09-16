@@ -53,7 +53,7 @@ module.exports = {
 			return;
 		}
 
-		const serverQueue = queue.get(interaction.guild.id);
+		let serverQueue = queue.get(interaction.guild.id);
 		if (!serverQueue) {
 			const queueConstruct = {
 				textChannel: interaction.channel,
@@ -64,7 +64,8 @@ module.exports = {
 			};
 
 			queue.set(interaction.guild.id, queueConstruct);
-			queueConstruct.songs.push(song);
+			serverQueue = queue.get(interaction.guild.id);
+			serverQueue.songs.push(song);
 
 			try {
 				const connection = joinVoiceChannel({
@@ -73,9 +74,9 @@ module.exports = {
 					adapterCreator: voiceChannel.guild.voiceAdapterCreator,
 				});
 
-				queueConstruct.connection = connection;
-				queueConstruct.playing = true;
-				await play(interaction.guild, queueConstruct.songs[0]);
+				serverQueue.connection = connection;
+				serverQueue.playing = true;
+				await play(interaction.guild, serverQueue.songs[0]);
 				return interaction.reply(`${song.title} adicionado a fila`);
 			}
 			catch (error) {
@@ -138,4 +139,3 @@ async function play(guild, song) {
 		return;
 	}
 }
-
