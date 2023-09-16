@@ -50,8 +50,6 @@ module.exports = {
 							talkedRecently.delete(interaction.member.id);
 						}, 30000);
 					}
-					const queueText = queueConstruct.songs.map((songName, indexa) => `${indexa + 1}. ${songName.title}`).join('\n');
-					console.log(`Fila atual:\n${queueText}`);
 					return interaction.reply('Mensagem chegou :)');
 				}
 				catch (error) {
@@ -69,8 +67,6 @@ module.exports = {
 						talkedRecently.delete(interaction.member.id);
 					}, 30000);
 				}
-				const queueText = serverQueue.songs.map((songName, indexa) => `${indexa + 1}. ${songName.title}`).join('\n');
-				console.log(`Fila atual:\n${queueText}`);
 				return interaction.reply('Mensagem vai chegar em breve :)');
 			}
 		}

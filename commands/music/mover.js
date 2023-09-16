@@ -56,7 +56,7 @@ module.exports = {
 		try {
 			if (num2 > serverQueue.songs.length) {
 				const movedSong = serverQueue.songs.splice(num1 - 1, 1);
-				serverQueue.songs.push(movedSong);
+				serverQueue.songs.concat(movedSong);
 				await interaction.reply('Movido com sucesso');
 				return;
 			}
