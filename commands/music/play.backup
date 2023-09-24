@@ -3,14 +3,13 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType } =
 const ytdl = require('ytdl-core-discord');
 const ytsr = require('ytsr');
 const { getQueueInstance } = require('./queueManager');
-const ytpl = require('ytpl');
 
 const audioPlayer = createAudioPlayer();
 const queue = getQueueInstance();
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('play2')
+		.setName('play')
 		.setDescription('Tocar musica do youtube')
 		.addStringOption(option =>
 			option
@@ -26,19 +25,8 @@ module.exports = {
 		}
 
 		let song;
-		let songArr = [];
 		try {
-			if (ytpl.validateID(query)) {
-				const playlist = await ytpl(query);
-				playlist.items.forEach(item => {
-					song = {
-						url: item.shortUrl,
-						title: item.title,
-					};
-					songArr.push(song);
-				});
-			}
-			else if (ytdl.validateURL(query)) {
+			if (ytdl.validateURL(query)) {
 				const videoInfo = await ytdl.getInfo(query);
 				song = {
 					url: query,
@@ -77,19 +65,7 @@ module.exports = {
 
 			queue.set(interaction.guild.id, queueConstruct);
 			serverQueue = queue.get(interaction.guild.id);
-			try {
-				if (songArr.length > 0) {
-					serverQueue.songs = serverQueue.songs.concat(songArr);
-					songArr = [];
-				}
-				else {
-					serverQueue.songs.push(song);
-				}
-			}
-			catch (error) {
-				console.error('Erro:', error);
-				await interaction.reply('Ocorreu um erro, tente novamente');
-			}
+			serverQueue.songs.push(song);
 
 			try {
 				const connection = joinVoiceChannel({
@@ -101,12 +77,7 @@ module.exports = {
 				serverQueue.connection = connection;
 				serverQueue.playing = true;
 				await play(interaction.guild, serverQueue.songs[0]);
-				if (serverQueue.songs.length > 0) {
-					await interaction.reply('Playlist adicionada a fila');
-				}
-				else {
-					await interaction.reply(`${song.title} adicionado a fila`);
-				}
+				return interaction.reply(`${song.title} adicionado a fila`);
 			}
 			catch (error) {
 				console.error('Erro:', error);
@@ -115,21 +86,8 @@ module.exports = {
 			}
 		}
 		else {
-			try {
-				if (songArr.length > 0) {
-					serverQueue.songs.concat(songArr);
-					songArr = [];
-					return interaction.reply('Playlist adicionada a fila');
-				}
-				else {
-					serverQueue.songs.push(song);
-					return interaction.reply(`${song.title} adicionado a fila`);
-				}
-			}
-			catch (error) {
-				console.error('Erro:', error);
-				await interaction.reply('Ocorreu um erro, tente novamente');
-			}
+			serverQueue.songs.push(song);
+			return interaction.reply(`${song.title} adicionado a fila`);
 		}
 	},
 	audioPlayer,
