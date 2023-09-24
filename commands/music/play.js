@@ -10,7 +10,7 @@ const queue = getQueueInstance();
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('play2')
+		.setName('play')
 		.setDescription('Tocar musica do youtube')
 		.addStringOption(option =>
 			option
