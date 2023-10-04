@@ -101,7 +101,7 @@ module.exports = {
 				serverQueue.connection = connection;
 				serverQueue.playing = true;
 				await play(interaction.guild, serverQueue.songs[0]);
-				if (serverQueue.songs.length > 0) {
+				if (serverQueue.songs.length > 1) {
 					await interaction.reply('Playlist adicionada a fila');
 				}
 				else {
@@ -116,7 +116,7 @@ module.exports = {
 		}
 		else {
 			try {
-				if (songArr.length > 0) {
+				if (songArr.length > 1) {
 					serverQueue.songs.concat(songArr);
 					songArr = [];
 					return interaction.reply('Playlist adicionada a fila');

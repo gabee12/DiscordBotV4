@@ -53,7 +53,7 @@ module.exports = {
 			}
 		}
 		else if (num && num2) {
-			if (num > serverQueue.songs.length || num2 > serverQueue.songs.length) {
+			if (num > serverQueue.songs.length) {
 				await interaction.reply('O número inserido é maior que o tamanho da fila atual');
 			}
 			else if (num < 1 || num2 < 1) {
@@ -64,10 +64,21 @@ module.exports = {
 			}
 			else {
 				try {
-					serverQueue.songs.splice(num - 1, num2 - 1);
-					await interaction.reply('Músicas removidas com sucesso da fila!');
-					if (num == 1) {
+					if (num == 1 && num2 >= serverQueue.songs.length) {
+						serverQueue.songs = [];
+					}
+					else if (num != 1 && num2 == serverQueue.songs.length) {
+						serverQueue.songs.splice(num - 1);
+						await interaction.reply('Músicas removidas com sucesso da fila!');
+					}
+					else if (num == 1 && num2 != serverQueue.songs.length) {
+						serverQueue.songs.splice(num - 1, num2 - 1);
+						await interaction.reply('Músicas removidas com sucesso da fila!');
 						play(interaction.guild, serverQueue.songs[0]);
+					}
+					else {
+						serverQueue.songs.splice(num - 1, num2 - 1);
+						await interaction.reply('Músicas removidas com sucesso da fila!');
 					}
 				}
 				catch (error) {
