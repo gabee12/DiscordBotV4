@@ -39,7 +39,7 @@ module.exports = {
 		}
 
 		if (num1 == 1 || num2 == 1) {
-			await interaction.reply('Mover uma música para o comeco da fila ou mover a primeira música da filla nao é possível');
+			await interaction.reply('Mover uma música para o comeco da fila ou mover a primeira música da fila nao é possível');
 			return;
 		}
 
