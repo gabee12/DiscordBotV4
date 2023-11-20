@@ -4,6 +4,8 @@ const ytdl = require('ytdl-core-discord');
 const ytsr = require('ytsr');
 const { getQueueInstance } = require('./queueManager');
 const ytpl = require('ytpl');
+const fs = require('fs');
+const agent = ytdl.createAgent(JSON.parse(fs.readFileSync('./cookies.json')));
 
 const audioPlayer = createAudioPlayer();
 const queue = getQueueInstance();
@@ -39,7 +41,7 @@ module.exports = {
 				});
 			}
 			else if (ytdl.validateURL(query)) {
-				const videoInfo = await ytdl.getInfo(query);
+				const videoInfo = await ytdl.getInfo(query, { agent });
 				song = {
 					url: query,
 					title: videoInfo.videoDetails.title,
@@ -146,13 +148,7 @@ async function play(guild, song) {
 	try {
 		serverQueue.connection.subscribe(audioPlayer);
 		const stream = await ytdl(song.url, {
-			filter: 'audioonly',
-			fmt: 'mp3',
-			highWaterMark: 1 << 62,
-			liveBuffer: 1 << 62,
-			dlChunkSize: 0,
-			bitrate: 128,
-			quality: 'lowestaudio',
+			agent: agent,
 		});
 
 		const resource = createAudioResource(stream, { inputType: StreamType.Opus });
