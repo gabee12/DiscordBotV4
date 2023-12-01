@@ -6,6 +6,8 @@ const { getQueueInstance } = require('./queueManager');
 const ytpl = require('ytpl');
 const fs = require('fs');
 const agent = ytdl.createAgent(JSON.parse(fs.readFileSync('./cookies.json')));
+const database = require('./../../database.js');
+const YTMusic = require('ytmusic-api').default;
 
 const audioPlayer = createAudioPlayer();
 const queue = getQueueInstance();
@@ -20,13 +22,14 @@ module.exports = {
 				.setDescription('Nome da música ou link do YouTube')
 				.setRequired(true)),
 	async execute(interaction) {
+		// const ytmusic = await new YTMusic().initialize();
+		await interaction.deferReply();
 		const query = interaction.options.getString('pesquisa');
 		const voiceChannel = interaction.member.voice.channel;
 		if (!voiceChannel) {
-			await interaction.reply('É preciso estar em um canal de voz');
+			await interaction.editReply('É preciso estar em um canal de voz');
 			return;
 		}
-
 		let song;
 		let songArr = [];
 		try {
@@ -39,6 +42,16 @@ module.exports = {
 					};
 					songArr.push(song);
 				});
+				// playlist.items.forEach(async item => {
+				// 	try {
+				// 		const DBInfo = await ytmusic.searchSongs(item.title);
+				// 		database.registerArtist(DBInfo[0].artists[0].name, DBInfo[0].duration);
+				// 		database.registerSong(DBInfo[0].name, DBInfo[0].duration);
+				// 	}
+				// 	catch (error) {
+				// 		console.error('DB ERROR: ', error);
+				// 	}
+				// });
 			}
 			else if (ytdl.validateURL(query)) {
 				const videoInfo = await ytdl.getInfo(query, { agent });
@@ -50,7 +63,7 @@ module.exports = {
 			else {
 				const searchResults = await ytsr(query, { limit: 1 });
 				if (!searchResults || searchResults.items.length === 0) {
-					await interaction.reply('Nenhum resultado encontrado para essa pesquisa');
+					await interaction.editReply('Nenhum resultado encontrado para essa pesquisa');
 					return;
 				}
 
@@ -63,7 +76,7 @@ module.exports = {
 		}
 		catch (error) {
 			console.error('Erro: ', error);
-			await interaction.reply('Ocorreu um erro ao processar o pedido');
+			await interaction.editReply('Ocorreu um erro ao processar o pedido');
 			return;
 		}
 
@@ -90,7 +103,7 @@ module.exports = {
 			}
 			catch (error) {
 				console.error('Erro:', error);
-				await interaction.reply('Ocorreu um erro, tente novamente');
+				await interaction.editReply('Ocorreu um erro, tente novamente');
 			}
 
 			try {
@@ -104,16 +117,16 @@ module.exports = {
 				serverQueue.playing = true;
 				await play(interaction.guild, serverQueue.songs[0]);
 				if (serverQueue.songs.length > 1) {
-					await interaction.reply('Playlist adicionada a fila');
+					await interaction.editReply('Playlist adicionada a fila');
 				}
 				else {
-					await interaction.reply(`${song.title} adicionado a fila`);
+					await interaction.editReply(`${song.title} adicionado a fila`);
 				}
 			}
 			catch (error) {
 				console.error('Erro:', error);
 				queue.delete(interaction.guild.id);
-				return interaction.reply('Ocorreu um erro ao tentar se juntar ao canal de voz');
+				return interaction.editReply('Ocorreu um erro ao tentar se juntar ao canal de voz');
 			}
 		}
 		else {
@@ -121,16 +134,16 @@ module.exports = {
 				if (songArr.length > 1) {
 					serverQueue.songs.concat(songArr);
 					songArr = [];
-					return interaction.reply('Playlist adicionada a fila');
+					return interaction.editReply('Playlist adicionada a fila');
 				}
 				else {
 					serverQueue.songs.push(song);
-					return interaction.reply(`${song.title} adicionado a fila`);
+					return interaction.editReply(`${song.title} adicionado a fila`);
 				}
 			}
 			catch (error) {
 				console.error('Erro:', error);
-				await interaction.reply('Ocorreu um erro, tente novamente');
+				await interaction.editReply('Ocorreu um erro, tente novamente');
 			}
 		}
 	},
@@ -139,6 +152,7 @@ module.exports = {
 };
 
 async function play(guild, song) {
+	const ytmusic = await new YTMusic().initialize();
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
 		queue.delete(guild.id);
@@ -149,11 +163,21 @@ async function play(guild, song) {
 		serverQueue.connection.subscribe(audioPlayer);
 		const stream = await ytdl(song.url, {
 			agent: agent,
+			highWaterMark: 1 << 62,
+			liveBuffer: 1 << 62,
 		});
 
 		const resource = createAudioResource(stream, { inputType: StreamType.Opus });
 
-		resource.playStream.on('end', () => {
+		resource.playStream.on('end', async () => {
+			try {
+				const DBInfo = await ytmusic.searchSongs(song.title);
+				database.registerArtist(DBInfo[0].artists[0].name, DBInfo[0].duration);
+				database.registerSong(DBInfo[0].name, DBInfo[0].duration);
+			}
+			catch (error) {
+				console.error('DB ERROR: ', error);
+			}
 			setTimeout(() => {
 				serverQueue.songs.shift();
 				play(guild, serverQueue.songs[0]);

@@ -36,6 +36,7 @@
     "sqlite3": "^5.1.6",
     "ytdl-core": "npm:@distube/ytdl-core@^4.13.2",
     "ytdl-core-discord": "^1.3.1",
+    "ytmusic-api": "^4.4.0",
     "ytpl": "^2.3.0",
     "ytsr": "^3.8.2"
   },
