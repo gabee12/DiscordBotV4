@@ -27,42 +27,6 @@ function registerArtist(artistName, playedTime) {
 	});
 }
 
-function getArtistCount(artistName, callback, num) {
-	db.get(`SELECT count FROM song${num} WHERE artistName = ?1`, [artistName], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			callback(err, null);
-		}
-		else {
-			callback(null, row ? row.count : 0);
-		}
-	});
-}
-
-function getArtist(id, callback, num) {
-	db.get(`SELECT artistName FROM artists${num} WHERE id = ?1`, [id], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			callback(err, null);
-		}
-		else {
-			callback(null, row ? row.artistName : 0);
-		}
-	});
-}
-
-function getArtistTimePlayed(artistName, callback, num) {
-	db.get(`SELECT timePlayed FROM artists${num} WHERE artistName = ?1`, [artistName], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			callback(err, null);
-		}
-		else {
-			callback(null, row ? row.timePlayed : 0);
-		}
-	});
-}
-
 function registerSong(songName, playedTime) {
 	db.run(`INSERT INTO ${songYear}(songName, count, timePlayed) VALUES (?1, 1, ?2) ON CONFLICT(songName) DO UPDATE SET count=count+1, timePlayed=timePlayed+?2 WHERE songName = ?1`, [songName, playedTime], (err) => {
 		if (err) {
@@ -72,43 +36,6 @@ function registerSong(songName, playedTime) {
 	db.run(`INSERT INTO ${songMonth}(songName, count, timePlayed) VALUES (?1, 1, ?2) ON CONFLICT(songName) DO UPDATE SET count=count+1, timePlayed=timePlayed+?2 WHERE songName = ?1`, [songName, playedTime], (err) => {
 		if (err) {
 			console.error(err.message);
-		}
-	});
-}
-
-
-function getSongTimePlayed(songName, callback, num) {
-	db.get(`SELECT timePlayed FROM songs${num} WHERE songName = ?1`, [songName], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			callback(err, null);
-		}
-		else {
-			callback(null, row ? row.timePlayed : 0);
-		}
-	});
-}
-
-function getSongCount(songName, callback, num) {
-	db.get(`SELECT count FROM songs${num} WHERE songName = ?1`, [songName], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			callback(err, null);
-		}
-		else {
-			callback(null, row ? row.count : 0);
-		}
-	});
-}
-
-function getSong(id, callback, num) {
-	db.get(`SELECT songName FROM songs${num} WHERE id = ?1`, [id], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			callback(err, null);
-		}
-		else {
-			callback(null, row ? row.songName : 0);
 		}
 	});
 }
@@ -125,6 +52,18 @@ async function getTotalTime(month, year) {
 	});
 }
 
+async function getArtistsSorted(month, year) {
+	return new Promise((resolve, reject) => {
+		db.all(`SELECT artistName, timePlayed, count FROM artists${month}${year} ORDER BY count DESC, timePlayed DESC, artistName`, (err, row) => {
+			if (err) {
+				console.error(err);
+				reject(err);
+			}
+			resolve(row);
+		});
+	});
+}
+
 function getMonthName() {
 	let name = today.toLocaleString('pt-Br', { month: 'short' }).slice(0, -1);
 	name = name[0].toUpperCase() + name.slice(1);
@@ -132,16 +71,11 @@ function getMonthName() {
 }
 
 module.exports = {
-	getArtist,
-	getArtistCount,
-	getArtistTimePlayed,
-	getSong,
-	getSongTimePlayed,
-	getSongCount,
 	registerArtist,
 	registerSong,
 	getTotalTime,
 	getMonthName,
+	getArtistsSorted,
 };
 
 process.on('exit', () => {
