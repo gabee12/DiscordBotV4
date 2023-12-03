@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const { audioPlayer } = require('./play');
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('resume')
 		.setDescription('Continua a música atual'),

@@ -4,6 +4,7 @@ const { getQueueInstance } = require('./queueManager');
 const queue = getQueueInstance();
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('mover')
 		.setDescription('Move uma música na fila')

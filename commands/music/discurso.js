@@ -6,6 +6,7 @@ const queue = getQueueInstance();
 const talkedRecently = new Set();
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('discurso')
 		.setDescription('Dr. Enéa Carneiro tem um lindo discurso a fazer'),

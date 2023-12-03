@@ -4,6 +4,7 @@ const { audioPlayer, play } = require('./play');
 const queue = getQueueInstance();
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('skip')
 		.setDescription('Pula a musica atual')

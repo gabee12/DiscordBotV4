@@ -6,6 +6,7 @@ const queue = getQueueInstance();
 const talkedRecently = new Set();
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('golira')
 		.setDescription('Uh ah ah ah ah ah ah'),

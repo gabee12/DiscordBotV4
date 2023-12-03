@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
+	category: 'info',
 	data: new SlashCommandBuilder()
 		.setName('server')
 		.setDescription('Responde com infos sobre o servidor atual'),

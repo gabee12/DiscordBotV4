@@ -13,6 +13,7 @@ const audioPlayer = createAudioPlayer();
 const queue = getQueueInstance();
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('play')
 		.setDescription('Tocar musica do youtube')

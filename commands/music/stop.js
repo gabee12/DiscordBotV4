@@ -7,6 +7,7 @@ const queue = getQueueInstance();
 
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('stop')
 		.setDescription('Para de tocar musica e apaga a fila atual'),

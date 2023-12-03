@@ -1,6 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
+	category: 'admin',
 	data: new SlashCommandBuilder()
 		.setName('ban')
 		.setDescription('Banir um membro')

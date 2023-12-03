@@ -3,6 +3,7 @@ const { getQueueInstance } = require('./queueManager');
 const queue = getQueueInstance();
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('shuffle')
 		.setDescription('Randomiza a fila'),

@@ -6,6 +6,7 @@ const queue = getQueueInstance();
 const talkedRecently = new Set();
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('john')
 		.setDescription('"You\'re fucking gay, as in homosexual" - John Marston'),

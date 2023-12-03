@@ -3,9 +3,9 @@ const today = new Date();
 
 const db = new sqlite3.Database('event_data.db');
 const songYear = 'songs' + String(today.getFullYear());
-const songMonth = 'songs' + String((today.getMonth() + 1));
+const songMonth = 'songs' + getMonthName() + String(today.getFullYear());
 const artistYear = 'artists' + String(today.getFullYear());
-const artistMonth = 'artists' + String((today.getMonth() + 1));
+const artistMonth = 'artists' + getMonthName() + String(today.getFullYear());
 
 db.serialize(() => {
 	db.run(`CREATE TABLE IF NOT EXISTS ${artistYear} (id INTEGER PRIMARY KEY AUTOINCREMENT, artistName TEXT UNIQUE, count INTEGER DEFAULT 0, timePlayed INTEGER)`);
@@ -113,18 +113,22 @@ function getSong(id, callback, num) {
 	});
 }
 
-function getTotalTime(num) {
+async function getTotalTime(month, year) {
 	return new Promise((resolve, reject) => {
-		db.get(`SELECT SUM(timePlayed) AS time FROM songs${num}`, (err, row) => {
+		db.get(`SELECT SUM(timePlayed) AS time FROM songs${month}${year}`, (err, row) => {
 			if (err) {
 				console.error(err.message);
 				reject(err);
 			}
-			else {
-				resolve(row ? row.time : 0);
-			}
+			resolve(row.time);
 		});
 	});
+}
+
+function getMonthName() {
+	let name = today.toLocaleString('pt-Br', { month: 'short' }).slice(0, -1);
+	name = name[0].toUpperCase() + name.slice(1);
+	return name;
 }
 
 module.exports = {
@@ -137,6 +141,7 @@ module.exports = {
 	registerArtist,
 	registerSong,
 	getTotalTime,
+	getMonthName,
 };
 
 process.on('exit', () => {

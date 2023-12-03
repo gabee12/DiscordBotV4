@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
+	category: 'info',
 	data: new SlashCommandBuilder()
 		.setName('user')
 		.setDescription('Retorna algumas infos sobre o usuario marcado ou que enviou o comando')

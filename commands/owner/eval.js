@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const { ownerId } = require('../../config.json');
 
 module.exports = {
+	category: 'owner',
 	data: new SlashCommandBuilder()
 		.setName('eval')
 		.setDescription('Comando restrito para desenvolvimento')

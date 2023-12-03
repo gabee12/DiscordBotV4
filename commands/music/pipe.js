@@ -7,6 +7,7 @@ const talkedRecently = new Set();
 
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('pipe')
 		.setDescription('plam'),

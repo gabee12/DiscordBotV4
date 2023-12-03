@@ -5,6 +5,7 @@ const { play } = require('./play');
 const queue = getQueueInstance();
 
 module.exports = {
+	category: 'music',
 	data: new SlashCommandBuilder()
 		.setName('retirar')
 		.setDescription('Remove uma música da fila')

@@ -8,6 +8,7 @@ module.exports = {
 		.setName('fila')
 		.setDescription('Mostra a fila de musicas atual'),
 	async execute(interaction) {
+		await interaction.deferReply();
 		const serverQueue = queue.get(interaction.guild.id);
 		if (!serverQueue || serverQueue.songs.length === 0) {
 			return interaction.reply('A fila esta vazia!');
