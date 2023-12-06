@@ -1,3 +1,4 @@
+// Copyright (C) 2023 Gabriel Echeverria - Full notice in bot.js
 const { SlashCommandBuilder } = require('discord.js');
 const { audioPlayer } = require('./play');
 

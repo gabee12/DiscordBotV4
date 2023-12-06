@@ -1,3 +1,4 @@
+// Copyright (C) 2023 Gabriel Echeverria - Full notice in bot.js
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {

@@ -1,3 +1,4 @@
+// Copyright (C) 2023 Gabriel Echeverria - Full notice in bot.js
 const sqlite3 = require('sqlite3').verbose();
 const today = new Date();
 

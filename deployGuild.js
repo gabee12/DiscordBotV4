@@ -1,3 +1,4 @@
+// Copyright (C) 2023 Gabriel Echeverria - Full notice in bot.js
 const { REST, Routes } = require('discord.js');
 const { clientId, guildId, token } = require('./config.json');
 const fs = require('node:fs');

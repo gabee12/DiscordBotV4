@@ -1,5 +1,5 @@
+// Copyright (C) 2023 Gabriel Echeverria - Full notice in bot.js
 const { SlashCommandBuilder } = require('discord.js');
-const { getVoiceConnection } = require('@discordjs/voice');
 const { getQueueInstance } = require('./queueManager');
 const { audioPlayer } = require('./play');
 
@@ -17,10 +17,8 @@ module.exports = {
 			await interaction.reply('É preciso estar em um canal de voz');
 			return;
 		}
-		const connection = getVoiceConnection(interaction.guild.id);
 		try {
 			audioPlayer.stop();
-			connection.destroy();
 			queue.delete(interaction.guild.id);
 			await interaction.reply('Obrigado, sua contribuição para a sociedade não será esquecida!');
 		}

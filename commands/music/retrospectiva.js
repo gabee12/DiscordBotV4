@@ -1,4 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js');
+// Copyright (C) 2023 Gabriel Echeverria - Full notice in bot.js
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const db = require('./../../database.js');
 const date = new Date();
 
@@ -40,10 +41,15 @@ module.exports = {
 				.setMinValue(2023)
 				.setMaxValue(2050)
 				.setName('ano')
-				.setDescription('Ano da retrospectiva')),
+				.setDescription('Ano da retrospectiva'))
+		.addBooleanOption(option =>
+			option
+				.setName('ignorar')
+				.setDescription('Ignora a restricao de data')),
 	async execute(interaction) {
 		await interaction.deferReply();
 
+		const ignorar = interaction.options.getBoolean('ignorar');
 		const command = interaction.options.getString('subcomando');
 		let mes = interaction.options.getString('mes') ?? db.getMonthName();
 		if (mes == 'a') {
@@ -98,9 +104,10 @@ module.exports = {
 		default:
 			break;
 		}
-
-		if (ano == date.getFullYear() && mesNum == (date.getMonth() + 1) && date.getDate() != lastDay(date.getFullYear, date.getMonth)) {
-			return interaction.editReply('O mes atual ainda nao acabou');
+		if (!ignorar) {
+			if (ano == date.getFullYear() && mesNum == (date.getMonth() + 1) && date.getDate() != lastDay(date.getFullYear, date.getMonth)) {
+				return interaction.editReply('O mes atual ainda nao acabou');
+			}
 		}
 
 		if (ano == date.getFullYear() && mesNum > (date.getMonth + 1)) {
@@ -111,11 +118,29 @@ module.exports = {
 		case 'tempo':
 			time = await db.getTotalTime(mes, String(ano)) / 60;
 			time = Math.round(time);
-			await interaction.editReply(`\`\`\`js\n${time} Minutos Tocados no total\n\`\`\``);
+			// eslint-disable-next-line no-case-declarations
+			const embedTempo = new EmbedBuilder()
+				.setColor(0x0099FF)
+				.setTitle('Tempo total tocado')
+				.setDescription(`${time} Minutos`)
+				.setTimestamp();
+			await interaction.editReply({ embeds: [embedTempo] });
 			break;
 		case 'artistas':
 			artistas = await db.getArtistsSorted(mes, String(ano));
-			await interaction.editReply(`\`\`\`js\nTop 5 artistas:\n1. ${artistas[0].artistName}\t${artistas[0].count} Músicas\t${Math.round(artistas[0].timePlayed / 60)} Minutos\n2. ${artistas[1].artistName}\t${artistas[1].count} Músicas\t${Math.round(artistas[1].timePlayed / 60)} Minutos\n3. ${artistas[2].artistName}\t${artistas[2].count} Músicas\t${Math.round(artistas[2].timePlayed / 60)} Minutos\n4. ${artistas[3].artistName}\t${artistas[3].count} Músicas\t${Math.round(artistas[3].timePlayed / 60)} Minutos\n5. ${artistas[4].artistName}\t${artistas[4].count} Músicas\t${Math.round(artistas[4].timePlayed / 60)} Minutos\`\`\``);
+			// eslint-disable-next-line no-case-declarations
+			const embedArtistas = new EmbedBuilder()
+				.setColor(0x0099FF)
+				.setTitle('Top 5 artistas')
+				.addFields(
+					{ name: `1. ${artistas[0].artistName}`, value: `${artistas[0].count} Músicas & ${Math.round(artistas[0].timePlayed / 60)} Minutos` },
+					{ name: `2. ${artistas[1].artistName}`, value: `${artistas[1].count} Músicas & ${Math.round(artistas[1].timePlayed / 60)} Minutos` },
+					{ name: `3. ${artistas[2].artistName}`, value: `${artistas[2].count} Músicas & ${Math.round(artistas[2].timePlayed / 60)} Minutos` },
+					{ name: `4. ${artistas[3].artistName}`, value: `${artistas[3].count} Músicas & ${Math.round(artistas[3].timePlayed / 60)} Minutos` },
+					{ name: `5. ${artistas[4].artistName}`, value: `${artistas[4].count} Músicas & ${Math.round(artistas[4].timePlayed / 60)} Minutos` },
+				)
+				.setTimestamp();
+			await interaction.editReply({ embeds: [embedArtistas] });
 			break;
 		default:
 			await interaction.editReply('Ocorreu um erro');

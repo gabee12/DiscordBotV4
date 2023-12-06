@@ -1,3 +1,21 @@
+/*
+DiscordBotV4 - My personal bot that i use with friends
+Copyright (C) 2023 Gabriel Echeverria
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
@@ -47,3 +65,31 @@ client.login(token);
 module.exports = {
 	client,
 };
+
+if (process.platform == 'win32') {
+	const rl = require('readline').createInterface({
+		input: process.stdin,
+		output: process.stdout,
+	});
+
+	rl.on('SIGINT', function() {
+		process.emit('SIGINT');
+	});
+}
+
+process.on('SIGINT', async function() {
+	const serverQueue = await queue.get('854864170965401630');
+	let queueText = JSON.stringify(serverQueue.songs);
+	queueText = queueText.replace(/\\n/g, '\\n')
+		.replace(/\\'/g, '\\\'')
+		.replace(/\\"/g, '\\"')
+		.replace(/\\&/g, '\\&')
+		.replace(/\\r/g, '\\r')
+		.replace(/\\t/g, '\\t')
+		.replace(/\\b/g, '\\b')
+		.replace(/\\f/g, '\\f');
+	// eslint-disable-next-line no-control-regex
+	queueText = queueText.replace(/[\u0000-\u0019]+/g, '');
+	fs.writeFileSync('fila.json', queueText);
+	process.exit();
+});
