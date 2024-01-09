@@ -135,18 +135,12 @@ module.exports = {
 		else {
 			try {
 				if (songArr.length > 1) {
-					if (timeoutId) {
-						clearTimeout(timeoutId);
-					}
 					serverQueue.songs.concat(songArr);
 					songArr = [];
 					return interaction.editReply('Playlist adicionada a fila');
 				}
 				else {
 					serverQueue.songs.push(song);
-					if (timeoutId) {
-						clearTimeout(timeoutId);
-					}
 					return interaction.editReply(`${song.title} adicionado a fila`);
 				}
 			}
