@@ -9,6 +9,7 @@ const fs = require('fs');
 const agent = ytdl.createAgent(JSON.parse(fs.readFileSync('./cookies.json')));
 const database = require('./../../database.js');
 const YTMusic = require('ytmusic-api').default;
+let timeoutId;
 
 const audioPlayer = createAudioPlayer();
 const queue = getQueueInstance();
@@ -134,12 +135,18 @@ module.exports = {
 		else {
 			try {
 				if (songArr.length > 1) {
+					if (timeoutId) {
+						clearTimeout(timeoutId);
+					}
 					serverQueue.songs.concat(songArr);
 					songArr = [];
 					return interaction.editReply('Playlist adicionada a fila');
 				}
 				else {
 					serverQueue.songs.push(song);
+					if (timeoutId) {
+						clearTimeout(timeoutId);
+					}
 					return interaction.editReply(`${song.title} adicionado a fila`);
 				}
 			}
@@ -154,15 +161,6 @@ module.exports = {
 };
 
 async function play(guild, song) {
-	let timeoutId;
-	if (serverQueue.songs.length <= 0) {
-		timeoutId = setTimeout(() => {
-			const connection = getVoiceConnection(guild.id);
-			connection.destroy();
-		}, 15 * 60 * 1000);
-		return;
-	}
-	clearTimeout(timeoutId);
 	const ytmusic = await new YTMusic().initialize();
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
@@ -191,6 +189,14 @@ async function play(guild, song) {
 			}
 			setTimeout(() => {
 				serverQueue.songs.shift();
+				if (serverQueue.songs.length <= 0) {
+					timeoutId = setTimeout(() => {
+						const connection = getVoiceConnection(guild.id);
+						connection.destroy();
+					}, 15 * 60 * 1000);
+					return;
+				}
+				clearTimeout(timeoutId);
 				play(guild, serverQueue.songs[0]);
 			}, 200);
 		});
