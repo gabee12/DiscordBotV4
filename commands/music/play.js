@@ -1,6 +1,6 @@
 // Copyright (C) 2023 Gabriel Echeverria - Full notice in bot.js
 const { SlashCommandBuilder } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, getVoiceConnection } = require('@discordjs/voice');
 const ytdl = require('ytdl-core-discord');
 const ytsr = require('ytsr');
 const { getQueueInstance } = require('./queueManager');
@@ -154,6 +154,15 @@ module.exports = {
 };
 
 async function play(guild, song) {
+	let timeoutId;
+	if (serverQueue.songs.length <= 0) {
+		timeoutId = setTimeout(() => {
+			const connection = getVoiceConnection(guild.id);
+			connection.destroy();
+		}, 15 * 60 * 1000);
+		return;
+	}
+	clearTimeout(timeoutId);
 	const ytmusic = await new YTMusic().initialize();
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
