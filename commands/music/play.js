@@ -164,10 +164,10 @@ async function play(guild, song) {
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
 		if (!timeoutId) {
+			console.log('Timeout Set!');
 			timeoutId = setTimeout(() => {
 				const connection = getVoiceConnection(guild.id);
 				connection.destroy();
-				console.error('Timeout Set!');
 			}, 30000);
 		}
 		queue.delete(guild.id);
