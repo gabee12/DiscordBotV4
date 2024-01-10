@@ -134,7 +134,7 @@ module.exports = {
 		}
 		else {
 			try {
-				if (timeoutId) {
+				if (timeoutId != undefined) {
 					clearTimeout(timeoutId);
 					timeoutId = undefined;
 					console.error('Timeout stopped!');
