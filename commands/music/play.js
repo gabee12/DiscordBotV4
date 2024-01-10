@@ -177,15 +177,6 @@ async function play(guild, song) {
 
 		const resource = createAudioResource(stream, { inputType: StreamType.Opus });
 
-		if (serverQueue.songs.length <= 0) {
-			timeoutId = setTimeout(() => {
-				const connection = getVoiceConnection(guild.id);
-				connection.destroy();
-				queue.delete(guild.id);
-				console.error('Timeout Set!');
-			}, 30000);
-		}
-
 		resource.playStream.on('end', async () => {
 			try {
 				const DBInfo = await ytmusic.searchSongs(song.title);
@@ -197,6 +188,14 @@ async function play(guild, song) {
 			}
 			setTimeout(() => {
 				serverQueue.songs.shift();
+				if (serverQueue.songs.length <= 0 && !timeoutId) {
+					timeoutId = setTimeout(() => {
+						const connection = getVoiceConnection(guild.id);
+						connection.destroy();
+						queue.delete(guild.id);
+						console.error('Timeout Set!');
+					}, 30000);
+				}
 				play(guild, serverQueue.songs[0]);
 			}, 200);
 		});
