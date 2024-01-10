@@ -85,6 +85,11 @@ module.exports = {
 
 		let serverQueue = queue.get(interaction.guild.id);
 		if (!serverQueue) {
+			if (timeoutId != undefined) {
+				clearTimeout(timeoutId);
+				timeoutId = undefined;
+				console.error('Timeout stopped!');
+			}
 			const queueConstruct = {
 				textChannel: interaction.channel,
 				voiceChannel,
@@ -134,11 +139,6 @@ module.exports = {
 		}
 		else {
 			try {
-				if (timeoutId != undefined) {
-					clearTimeout(timeoutId);
-					timeoutId = undefined;
-					console.error('Timeout stopped!');
-				}
 				if (songArr.length > 1) {
 					serverQueue.songs.concat(songArr);
 					songArr = [];
