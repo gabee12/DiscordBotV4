@@ -134,6 +134,10 @@ module.exports = {
 		}
 		else {
 			try {
+				if (timeoutId) {
+					clearTimeout(timeoutId);
+					timeoutId = undefined;
+				}
 				if (songArr.length > 1) {
 					serverQueue.songs.concat(songArr);
 					songArr = [];
@@ -187,10 +191,11 @@ async function play(guild, song) {
 					timeoutId = setTimeout(() => {
 						const connection = getVoiceConnection(guild.id);
 						connection.destroy();
-					}, 15 * 60 * 1000);
+					}, 30000);
 					return;
 				}
 				clearTimeout(timeoutId);
+				timeoutId = undefined;
 				play(guild, serverQueue.songs[0]);
 			}, 200);
 		});
