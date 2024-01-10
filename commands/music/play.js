@@ -163,6 +163,13 @@ async function play(guild, song) {
 	const ytmusic = await new YTMusic().initialize();
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
+		if (!timeoutId) {
+			timeoutId = setTimeout(() => {
+				const connection = getVoiceConnection(guild.id);
+				connection.destroy();
+				console.error('Timeout Set!');
+			}, 30000);
+		}
 		queue.delete(guild.id);
 		return;
 	}
@@ -188,14 +195,6 @@ async function play(guild, song) {
 			}
 			setTimeout(() => {
 				serverQueue.songs.shift();
-				if (serverQueue.songs.length <= 0 && !timeoutId) {
-					timeoutId = setTimeout(() => {
-						const connection = getVoiceConnection(guild.id);
-						connection.destroy();
-						queue.delete(guild.id);
-						console.error('Timeout Set!');
-					}, 30000);
-				}
 				play(guild, serverQueue.songs[0]);
 			}, 200);
 		});
