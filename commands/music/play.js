@@ -137,7 +137,7 @@ module.exports = {
 				if (timeoutId) {
 					clearTimeout(timeoutId);
 					timeoutId = undefined;
-					console.log('Timeout stopped!');
+					console.error('Timeout stopped!');
 				}
 				if (songArr.length > 1) {
 					serverQueue.songs.concat(songArr);
@@ -182,7 +182,7 @@ async function play(guild, song) {
 				const connection = getVoiceConnection(guild.id);
 				connection.destroy();
 				queue.delete(guild.id);
-				console.log('Timeout Set!');
+				console.error('Timeout Set!');
 			}, 30000);
 		}
 
