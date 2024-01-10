@@ -9,7 +9,7 @@ const fs = require('fs');
 const agent = ytdl.createAgent(JSON.parse(fs.readFileSync('./cookies.json')));
 const database = require('./../../database.js');
 const YTMusic = require('ytmusic-api').default;
-let timeoutId;
+let timeoutId = undefined;
 
 const audioPlayer = createAudioPlayer();
 const queue = getQueueInstance();
@@ -163,12 +163,12 @@ async function play(guild, song) {
 	const ytmusic = await new YTMusic().initialize();
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
-		if (!timeoutId) {
+		if (timeoutId == undefined) {
 			console.log('Timeout Set!');
 			timeoutId = setTimeout(() => {
 				const connection = getVoiceConnection(guild.id);
 				connection.destroy();
-			}, 30000);
+			}, 15 * 60 * 1000);
 		}
 		queue.delete(guild.id);
 		return;
