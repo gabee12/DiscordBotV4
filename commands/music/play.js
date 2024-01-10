@@ -180,6 +180,7 @@ async function play(guild, song) {
 			timeoutId = setTimeout(() => {
 				const connection = getVoiceConnection(guild.id);
 				connection.destroy();
+				queue.delete(guild.id);
 			}, 30000);
 		}
 
