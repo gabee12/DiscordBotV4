@@ -27,7 +27,9 @@ module.exports = {
 	async execute(interaction) {
 		// const ytmusic = await new YTMusic().initialize();
 		await interaction.deferReply();
-		const query = interaction.options.getString('pesquisa');
+		const regex = /https:\/\/www\.youtube\.com\/shorts|www\.youtube\.com\/shorts\//;
+		const urlUnfixed = interaction.options.getString('pesquisa');
+		const query = urlUnfixed.replace(regex, 'www.youtube.com/watch/');
 		const voiceChannel = interaction.member.voice.channel;
 		if (!voiceChannel) {
 			await interaction.editReply('É preciso estar em um canal de voz');
@@ -85,10 +87,8 @@ module.exports = {
 
 		let serverQueue = queue.get(interaction.guild.id);
 		if (!serverQueue) {
-			if (timeoutId != undefined) {
+			if (timeoutId) {
 				clearTimeout(timeoutId);
-				timeoutId = undefined;
-				console.error('Timeout stopped!');
 			}
 			const queueConstruct = {
 				textChannel: interaction.channel,
@@ -157,19 +157,17 @@ module.exports = {
 	},
 	audioPlayer,
 	play,
+	timeoutId,
 };
 
 async function play(guild, song) {
-	const ytmusic = await new YTMusic().initialize();
+	const ytmusic = await new YTMusic().initialize('./cookies_music.json');
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
-		if (timeoutId == undefined) {
-			console.log('Timeout Set!');
-			timeoutId = setTimeout(() => {
-				const connection = getVoiceConnection(guild.id);
-				connection.destroy();
-			}, 15 * 60 * 1000);
-		}
+		timeoutId = setTimeout(() => {
+			const connection = getVoiceConnection(guild.id);
+			connection.destroy();
+		}, 15 * 60 * 1000);
 		queue.delete(guild.id);
 		return;
 	}

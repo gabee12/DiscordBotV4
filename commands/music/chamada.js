@@ -1,7 +1,7 @@
 // Copyright (C) 2023 Gabriel Echeverria - Full notice in bot.js
 const { SlashCommandBuilder } = require('discord.js');
 const { getQueueInstance } = require('./queueManager');
-const { play } = require('./play');
+const { play, timeoutId } = require('./play');
 const { joinVoiceChannel } = require('@discordjs/voice');
 const queue = getQueueInstance();
 const talkedRecently = new Set();
@@ -24,6 +24,9 @@ module.exports = {
 			title: 'Chegou mensagem pra você',
 		};
 		if (!talkedRecently.has(interaction.member.id)) {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
 			if (!serverQueue) {
 				const queueConstruct = {
 					textChannel: interaction.channel,
