@@ -3,3 +3,5 @@ node_modules
 config.json
 cookies.json
 play.bkp
+event_data.db
+fila.json
